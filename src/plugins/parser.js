@@ -72,8 +72,8 @@ class MADRGenerator extends MADRListener {
 	enterChosenOptionAndExplanation(ctx) {
 		let rawDecisionOutcome = ctx.getText();
 
-		if (rawDecisionOutcome.startsWith("Chosen option: ")) {
-			rawDecisionOutcome = rawDecisionOutcome.split(/, because */);
+		if (rawDecisionOutcome.startsWith("Opção escolhida: ")) {
+			rawDecisionOutcome = rawDecisionOutcome.split(/.\n\n */);
 			rawDecisionOutcome[0] = rawDecisionOutcome[0].substring("Chosen option: ".length).trim(); // Remove 'Chosen option: '
 			let delim = rawDecisionOutcome[0].charAt(0);
 			let chosenOption = "";
@@ -254,14 +254,14 @@ export function adr2md(adrToParse) {
 				Rejected: "Rejeitado",
 				Superseded: "Substituído"
 			}
-			md = md.concat("\n* Status: " + newStatus[adr.status.trim()]);
+			md = md.concat("\n:dart: Status: " + newStatus[adr.status.trim()]);
 		}
 		if (adr.deciders.length > 0) {
-			md = md.concat("\n* Envolvidos: " + adr.deciders);
+			md = md.concat("\n:busts_in_silhouette: Envolvidos: " + adr.deciders);
 		}
 		if (adr.date !== "") {
 			//md = md.concat("\n* Date: " + adr.date);
-			md = md.concat("\n* Data: " + adr.date.substring(8, 10) + "-" + adr.date.substring(5, 7) + "-" + adr.date.substring(0, 4));
+			md = md.concat("\n:calendar: Data: " + adr.date.substring(8, 10) + "-" + adr.date.substring(5, 7) + "-" + adr.date.substring(0, 4));
 		}
 		md = md.concat("\n");
 	}
@@ -319,8 +319,8 @@ export function adr2md(adrToParse) {
 				if (opt.description !== "") {
 					res = res.concat("\n" + opt.description + "\n");
 				}
-				res = opt.pros.reduce((total, arg) => total.concat("\n* :white_check_mark: " + arg), res);
-				res = opt.cons.reduce((total, arg) => total.concat("\n* :heavy_exclamation_mark: " + arg), res);
+				res = opt.pros.reduce((total, arg) => total.concat("\n:white_check_mark: " + arg), res);
+				res = opt.cons.reduce((total, arg) => total.concat("\n:heavy_exclamation_mark: " + arg), res);
 				if (opt.pros.length > 0 || opt.cons.length > 0) {
 					// insert final new line
 					res = res + "\n";
