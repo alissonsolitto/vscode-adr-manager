@@ -248,72 +248,79 @@ export function adr2md(adrToParse) {
 
 	if ((adr.status !== "" && adr.status !== "null") || adr.deciders.length > 0 || adr.date !== "") {
 		if (adr.status !== "" && adr.status !== "null") {
-			md = md.concat("\n* Status: " + adr.status.trim());
+			var newStatus = {
+				Proposed: "Proposto",
+				Accepted: "Aceito",
+				Rejected: "Rejeitado",
+				Superseded: "Substituído"
+			}
+			md = md.concat("\n* Status: " + newStatus[adr.status.trim()]);
 		}
 		if (adr.deciders.length > 0) {
-			md = md.concat("\n* Deciders: " + adr.deciders);
+			md = md.concat("\n* Envolvidos: " + adr.deciders);
 		}
 		if (adr.date !== "") {
-			md = md.concat("\n* Date: " + adr.date);
+			//md = md.concat("\n* Date: " + adr.date);
+			md = md.concat("\n* Data: " + adr.date.substring(8, 10) + "-" + adr.date.substring(5, 7) + "-" + adr.date.substring(0, 4));
 		}
 		md = md.concat("\n");
 	}
 
 	if (adr.technicalStory !== "") {
-		md = md.concat("\nTechnical Story: " + adr.technicalStory + "\n");
+		md = md.concat("\nHistória técnica: " + adr.technicalStory + "\n");
 	}
 
 	if (adr.contextAndProblemStatement !== "") {
-		md = md.concat("\n## Context and Problem Statement\n\n" + adr.contextAndProblemStatement + "\n");
+		md = md.concat("\n## Contexto\n\n" + adr.contextAndProblemStatement + "\n");
 	}
 
 	if (adr.decisionDrivers.length > 0) {
-		md = md.concat("\n## Decision Drivers\n\n");
+		md = md.concat("\n## Premissas\n\n");
 		for (let i in adr.decisionDrivers) {
 			md = md.concat("* " + adr.decisionDrivers[i] + "\n");
 		}
 	}
 
 	if (adr.consideredOptions.length > 0) {
-		md = md.concat("\n## Considered Options\n\n");
+		md = md.concat("\n## Opções consideradas\n\n");
 		md = adr.consideredOptions.reduce((total, opt) => total + "* " + opt.title + "\n", md);
 	}
 
 	md = md.concat(
-		'\n## Decision Outcome\n\nChosen option: "' +
+		'\n## Resultado da decisão\n\nOpção escolhida: "' +
 			createShortTitle(adr.decisionOutcome.chosenOption.replaceAll('"', "'"))
 	);
 
 	if (adr.decisionOutcome.explanation.trim() !== "") {
 		let isList = adr.decisionOutcome.explanation.trim().match(/^[*-+]/);
 		if (isList) {
-			md = md.concat('", because\n\n' + adr.decisionOutcome.explanation + "\n");
+			md = md.concat('".\n\n' + adr.decisionOutcome.explanation + "\n");
 		} else {
-			md = md.concat('", because ' + adr.decisionOutcome.explanation + "\n");
+			md = md.concat('".\n\n' + adr.decisionOutcome.explanation + "\n");
 		}
 	} else {
 		md = md.concat('"\n');
 	}
 
 	if (adr.decisionOutcome.positiveConsequences.length > 0) {
-		md = md.concat("\n### Positive Consequences\n\n");
+		md = md.concat("\n### Consequências positivas\n\n");
 		md = adr.decisionOutcome.positiveConsequences.reduce((total, con) => total + "* " + con + "\n", md);
 	}
 	if (adr.decisionOutcome.negativeConsequences.length > 0) {
-		md = md.concat("\n### Negative Consequences\n\n");
+		md = md.concat("\n### Consequências negativas\n\n");
 		md = adr.decisionOutcome.negativeConsequences.reduce((total, con) => total + "* " + con + "\n", md);
 	}
 
 	if (adr.consideredOptions.some((opt) => opt.description !== "" || opt.pros.length > 0 || opt.cons.length > 0)) {
-		md = md.concat("\n## Pros and Cons of the Options\n");
+		md = md.concat("\n## Prós e contras das opções\n");
 		md = adr.consideredOptions.reduce((total, opt) => {
 			if (opt.description !== "" || opt.pros.length > 0 || opt.cons.length > 0) {
 				let res = total.concat("\n### " + createShortTitle(opt.title) + "\n");
 				if (opt.description !== "") {
 					res = res.concat("\n" + opt.description + "\n");
 				}
-				res = opt.pros.reduce((total, arg) => total.concat("\n* Good, because " + arg), res);
-				res = opt.cons.reduce((total, arg) => total.concat("\n* Bad, because " + arg), res);
+				res = opt.pros.reduce((total, arg) => total.concat("\n* :white_check_mark: " + arg), res);
+				res = opt.cons.reduce((total, arg) => total.concat("\n* :heavy_exclamation_mark: " + arg), res);
 				if (opt.pros.length > 0 || opt.cons.length > 0) {
 					// insert final new line
 					res = res + "\n";
@@ -325,7 +332,7 @@ export function adr2md(adrToParse) {
 		}, md);
 	}
 	if (adr.links.length > 0) {
-		md = md.concat("\n## Links\n\n");
+		md = md.concat("\n## Referências\n\n");
 		md = adr.links.reduce((total, link) => total + "* " + link + "\n", md);
 	}
 	return md;
